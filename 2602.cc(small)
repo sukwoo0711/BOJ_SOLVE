@@ -1,0 +1,43 @@
+#include <iostream>
+#include <vector>
+#include <string>
+using namespace std;
+string duru = "";
+string angel = "";
+string devil = "";
+int n,m;
+long long int res = 0;
+void dfs(int now, int index, int pos)
+{
+	if (index > n)
+		return;
+	if (now == m)
+		res++;
+	if (pos == 1)
+		for (int i = index+1; i < n; i++)
+			if (devil[i] == duru[now])
+				dfs(now + 1, i, 3 - pos);
+	else if (pos == 2)
+		for (int i = index+1; i < n; i++)
+			if (angel[i] == duru[now])
+				dfs(now + 1, i, 3 - pos);
+}
+int main()
+{
+	int start1, start2;
+	cin >> duru >> angel >> devil;
+	m = duru.length();
+	n = angel.length();
+	for (int i = 0; i < angel.length(); i++)
+		if (angel[i] == duru[0]) {
+			start1 = i;
+			dfs(1,start1, 1);
+		}
+	for (int i = 0; i < devil.length(); i++)
+		if (devil[i] == duru[0]) {
+			start2 = i;
+			dfs(1, start2, 2);
+		}
+	printf("%lld\n", res);
+	return 0;
+}
