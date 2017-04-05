@@ -1,16 +1,11 @@
 #include <iostream>
 #include <cstdio>
 #include <queue>
+#include <algorithm>
+#define INF 99999999
 using namespace std;
-/*
-1
-4 4
-0 0 0 0
-1 0 0 0
-0 0 1 0
-0 1 0 0
-*/
 
+int res=INF;
 int k, n, m;
 int c[201][201];
 int visit[201][201][31];
@@ -18,48 +13,25 @@ struct p {
 	int x, y, count;
 	p(int a, int b, int c) : x(a), y(b), count(c) {};
 };
-void init()
-{
-	for (int i = 0; i < n; i++)
-	{
-		for (int j = 0; j < m; j++)
-		{
-			for (int x = 0; x < k; x++) {
-				visit[i][j][x] = 99999999;
-			}
-		}
-	}
 
-}
-void print()
-{
-	for (int i = 0; i < n; i++)
-	{
-		for (int j = 0; j < m; j++)
-		{
-			printf("[%d]", visit[i][j][0]);
-		}
-		puts("");
-	}
-	puts("");
-}
 void input()
 {
 	scanf("%d", &k);
-	scanf("%d %d", &n, &m);
+	scanf("%d %d", &m, &n);
 	for (int i = 0; i < n; i++)
 		for (int j = 0; j < m; j++)
 			scanf("%d", &c[i][j]);
-
 }
+
 int dx[4] = { -1,1,0,0 };
 int dy[4] = { 0,0,-1,1 };
-int jx[8] = { -1,-2,1,2,1,2,2,1 };
-int jy[8] = { -2,-1,1,2,-2,1,1,2 };
-void bfs(int x, int y, int k)
+int jx[8] = { -1,-2,-2,-1,1,2,2,1 };
+int jy[8] = { -2,-1,1,2,-2,-1,1,2 };
+
+void bfs(int x, int y, int _k)
 {
 	queue<p> q;
-	visit[x][y][k] = 1;
+	visit[x][y][_k] = 0;
 	q.push(p(x, y, 0));
 	while (!q.empty())
 	{
@@ -67,6 +39,8 @@ void bfs(int x, int y, int k)
 		int py = q.front().y;
 		int jump = q.front().count;
 		q.pop();
+		if (px == n - 1 && py == m - 1) 
+			return;
 		//with no jump
 		for (int i = 0; i < 4; i++)
 		{
@@ -75,7 +49,7 @@ void bfs(int x, int y, int k)
 			if (nx < 0 || nx >= n || ny < 0 || ny >= m)
 				continue;
 
-			if (c[nx][ny]==0 && visit[nx][ny][jump] >=visit[px][py][jump]+1)
+			if (c[nx][ny] == 0 && visit[nx][ny][jump] == 0)
 			{
 				visit[nx][ny][jump] = visit[px][py][jump] + 1;
 				q.push(p(nx, ny, jump));
@@ -88,24 +62,26 @@ void bfs(int x, int y, int k)
 			int ny = py + jy[i];
 			if (nx < 0 || nx >= n || ny < 0 || ny >= m)
 				continue;
-			if (c[nx][ny] == 0 && visit[nx][ny][jump] >= visit[px][py][jump] + 1)
+			if (c[nx][ny] == 0 && visit[nx][ny][jump+1] ==0)
 			{
-				visit[nx][ny][jump+1] = visit[px][py][jump] + 1;
-				q.push(p(nx, ny, jump+1));
+				visit[nx][ny][jump + 1] = visit[px][py][jump] + 1;
+				q.push(p(nx, ny, jump + 1));
 			}
 		}
-		print();
 	}
 }
 
 int main()
 {
-	//input line();
 	input();
-	init();
 	bfs(0, 0, 0);
-	printf("%d\n", visit[n - 1][m - 1][0]);
-	printf("%d\n", visit[n - 1][m - 1][1]);
-
+	for (int i = 0; i <= k; i++) 
+		if (visit[n - 1][m - 1][i] != 0) 
+			res = min(res, visit[n - 1][m - 1][i]);
+	
+	if (res == INF)
+		puts("-1");
+	else
+		printf("%d\n", res);
 	return 0;
 }
